@@ -5,12 +5,21 @@ import { StatusContext } from './StatusContext';
 import { NewTask } from './NewTask'
 import NavBar from './NavBar'
 import Login from './Login'
+import JobTableView from './JobView'
 
 const App = () => {
 
     const [user, setUser] = React.useState<string | null>(null)
     const [running, setRunning] = React.useState<boolean>(false)
-    const statusValue = React.useMemo(() => ({ running, setRunning }), [running, setRunning]);
+    const [userCount, setUserCount] = React.useState<number>(0)
+    const [completedCount, setCompletedCount] = React.useState<number>(0)
+    const [log, setLog] = React.useState<string|undefined>()
+
+    const statusValue = React.useMemo(() => ({ running, setRunning, 
+                                               userCount, setUserCount,
+                                               completedCount, setCompletedCount,
+                                               log, setLog
+                                            }), [running, setRunning, userCount, setUserCount, completedCount, setCompletedCount, log, setLog]);
     const [cookies, , removeCookie] = useCookies(['token']);
 
     const logout = () => {
@@ -28,6 +37,7 @@ const App = () => {
                             <br/>
                             <NewTask/> 
                             <br/>
+                            <JobTableView/>
                         </StatusContext.Provider>
                     </div> : <Login setUser={setUser} />
                 }

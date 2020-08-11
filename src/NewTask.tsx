@@ -1,7 +1,7 @@
 
 import React from 'react'
 
-import { StatusContext } from './StatusContext';
+import { StatusContext, contextType } from './StatusContext';
 import { InputLabel, FormControl, FormLabel, FormGroup, CircularProgress, TextField, Select, MenuItem, Grid, Button } from '@material-ui/core'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { Send } from '@material-ui/icons';
@@ -81,7 +81,7 @@ export const NewTask = () => {
   const dogNameRef = React.useRef('Pluto')
   const catNameRef = React.useRef('Pubs')
 
-  const { running } = React.useContext<{ running: boolean; setRunning: React.Dispatch<React.SetStateAction<boolean>>; }>(StatusContext);
+  const { running, setUserCount, setCompletedCount, setLog } = React.useContext<contextType>(StatusContext);
 
   const onSelectedAnimalChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
       setSelectedAnimal(event.target.value as string)
@@ -98,45 +98,48 @@ export const NewTask = () => {
     console.log("Breed:", event.target.value)
   }
 
-  // const handleSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-  //   // console.log('Submitted: ' + selectedCar + ":" + selectedColor + ":" + selectedModel);
+  const sumitTask = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
 
-  //   setLog(undefined);
-  //   ws?.current.send(JSON.stringify({ action: "doTask", car: selectedCar, model: selectedModel, color: selectedColor }));
-  // }
- 
-  // const handleLogClick = ( event: React.MouseEvent<HTMLButtonElement, MouseEvent> ) => {
-  //   // console.log("Showing log for: ", log)
-  //   // setShowModal(true)
-  // }
+    let data: any;
+    if (selectedAnimal === selectAnimals[0]) {
+      data = { selectedAnimal: selectedCatBreed }
+    } else if (selectedAnimal === selectAnimals[1]) {
+      data = { selectedAnimal: selectedDogBreed }
+    }
 
- 	const onReceiveMessage = ({ data }: { data: string; }) => {
-		const obj: IMessage | null = JSON.parse(data);
-
-    if (!obj)
-      return
-
-		switch (obj.type) {
-      case "state":
-        // setCompletedCount(obj?.completed);
-        // setLog(obj?.log)
-        break;
-      case "users":
-        // setUserCount(obj?.count);
-        break;
-      default:
-        console.error("unsupported event", data);
-		}
-	};
+    setLog(undefined);
+    ws?.current.send(JSON.stringify({ action: "doTask",  data }));
+  }
 
   React.useEffect(() => {
+
+    const onReceiveMessage = ({ data }: { data: string; }) => {
+      const obj: IMessage | null = JSON.parse(data);
+
+      if (!obj)
+        return
+
+      switch (obj.type) {
+        case "state":
+          setCompletedCount(obj?.completed);
+          setLog(obj?.log)
+          break;
+        case "users":
+          setUserCount(obj?.count);
+          break;
+        default:
+          console.error("unsupported event", data);
+      }
+    };
+
 		ws?.current?.close();
 
 		try {
 
 			ws.current = new WebSocket(`ws://localhost:6789`);
 
-			console.log("WS:", ws.current)
+			// console.log("WS:", ws.current)
 
 			if (ws.current) {
 				ws.current.addEventListener("message", onReceiveMessage);
@@ -149,13 +152,7 @@ export const NewTask = () => {
 		catch(err) {
 			console.error(err.message);
 		}
-	}, [ws]);
-
-  const sumitTask = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault();
-
-    console.log("Task....")
-  }
+	}, [ws, setUserCount, setCompletedCount, setLog]);
 
   const classes = useStyles();
 
