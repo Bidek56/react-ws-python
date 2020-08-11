@@ -1,40 +1,48 @@
 The client of this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+### Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+1. #### `npm start`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+    Runs the app in the development mode.<br />
+    Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+    The page will reload if you make edits.<br />
+    You will also see any lint errors in the console.
 
-### `npm test`
+2. #### `npm test`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    Launches the test runner in the interactive watch mode.<br />
+    See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+3. #### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    Builds the app for production to the `build` folder.<br />
+    It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+    The build is minified and the filenames include the hashes.<br />
+    Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `server`
+### `Front end server`
 
-The server for this project was based around Deno and Oak.
+The server behind the frontend is written in Deno and Oak.
 
 To run it:
 
-[Install Deno](https://deno.land/#installation)
+1. [Install Deno](https://deno.land/#installation)
 
-Use: `deno run --allow-net --allow-write --allow-env server.ts`
+2. Use:
+    1. `deno run --allow-net --allow-write --allow-env server.ts`
+    
+    Or
 
-Or use [denon](https://github.com/denosaurs/denon): `denon start`
+    2. use [denon](https://github.com/denosaurs/denon): `denon start`
+
+### `Websocket server`
+The websocket server is written using Python 3.8
+
+Run it using: `python pyserver/server.py`

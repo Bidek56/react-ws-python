@@ -99,7 +99,7 @@ const Login = ({ setUser }: LoginProps ) => {
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
-                <Typography component="h1" variant="h5">ETL Sign in</Typography>
+                <Typography component="h1" variant="h5">Sign in</Typography>
                 <form id="loginForm" className={classes.form} noValidate onSubmit={handleSignIn}>
                     <TextField id="userInput" variant="outlined" margin="normal" required fullWidth
                         label="User name" name="user" autoComplete="user" autoFocus onChange={e => userRef.current = e.target.value} />

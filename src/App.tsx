@@ -1,6 +1,5 @@
 import React from 'react'
 import { CookiesProvider, useCookies } from "react-cookie";
-import { Helmet } from 'react-helmet';
 
 import { StatusContext } from './StatusContext';
 import { NewTask } from './NewTask'
@@ -24,11 +23,6 @@ const App = () => {
             <React.Fragment>
                 { user || (cookies && cookies.token) ?
                     <div>
-                        <Helmet>
-                            <title>{running ? "In progress" : "Runner"}</title>
-                            <link rel="shortcut icon" href={running ? "/favicon-busy-2.ico" : "/favicon.ico"}></link>
-                        </Helmet>
-
                         <StatusContext.Provider value={statusValue}>
                             <NavBar logout={logout} />
                             <br/>

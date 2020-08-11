@@ -1,53 +1,10 @@
 
 import React from 'react'
-import PropTypes from 'prop-types'
 
-type Dispatcher<S> = React.Dispatch<React.SetStateAction<S>>;
-type ScrollProp = {setShowModal: Dispatcher<boolean>, path: string|undefined};
-
-export const ScrollModal = ({setShowModal, path }: ScrollProp) => {
-
-  const [logContent, setLogContent] = React.useState<string|null>(null);
-
-  // Similar to componentDidMount and componentDidUpdate:
-  React.useEffect(() => {
-    const fetchLog = async () => {
-      const response = await fetch(`/log`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ path })
-      })
-
-      // console.log("Res:", response)
-
-      if (response.ok) {
-        const body = await response.json()        
-        setLogContent(body?.content)
-      }
-    }
-
-    fetchLog()
-  },[path]);
-
-  const onClose = ( event: React.MouseEvent<HTMLButtonElement, MouseEvent> ) => {
-    setShowModal(false)
-  }
-
-  return !path ? null :
-      <div>Log for: {path}<br/>
-        {logContent}
-        <div>
-          <button className="btn btn-outline-danger" onClick={onClose}>Close</button>
-        </div>
-      </div>
-}
-
-ScrollModal.propTypes = {
-  setShowModal: PropTypes.func.isRequired,
-  path: PropTypes.string.isRequired
-}
+import { StatusContext } from './StatusContext';
+import { InputLabel, FormControl, FormLabel, FormGroup, CircularProgress, TextField, Select, MenuItem, Grid, Button } from '@material-ui/core'
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { Send } from '@material-ui/icons';
 
 interface IMessage {
   count: number;
@@ -56,58 +13,102 @@ interface IMessage {
   type: string;
 }
 
+const selectAnimals = ['Dog', 'Cat']
+const animalMenu = selectAnimals.map((name, key) => <MenuItem key={key} value={name}>{name}</MenuItem>)
+
+const catBreeds = ['Aegean', 'American Bobtail', 'American Curl', 'Asian cat']
+const catBreedMenu = catBreeds.map((name, key) => <MenuItem key={key} value={name}>{name}</MenuItem>)
+
+const dogBreeds = ['Affenpinscher', 'Akbash', 'Akita Chow', 'Bassador']
+const dogBreedMenu = dogBreeds.map((name, key) => <MenuItem key={key} value={name}>{name}</MenuItem>)
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        button: {
+            margin: theme.spacing(1),
+        },
+        container: {
+            display: 'flex',
+            flexWrap: 'wrap',
+        },
+        textField: {
+            margin: 8,
+            width: 500.
+        },
+        labelRoot: {
+            marginLeft: 0,
+            marginRight: 0,
+            fontSize: 18,
+
+        },
+        progress: {
+            margin: theme.spacing(2),
+        },
+        selectEmpty: {
+            marginTop: theme.spacing(1),
+            marginLeft: theme.spacing(1)
+        },
+    }),
+);
+
+interface ICustomInput {
+    classes: any
+    label: string
+    name: React.MutableRefObject<string>
+}
+
+// Custom text field
+const CustomTextField: React.FC<ICustomInput> = (ref: React.PropsWithChildren<ICustomInput>): JSX.Element => {
+    return (
+        <TextField className={ref.classes.textField}
+            InputLabelProps={{ classes: { root: ref.classes.labelRoot } }}
+            variant="standard"
+            type="string"
+            label={ref.label}
+            defaultValue={ref.name.current}
+            onChange={e => ref.name.current = e.target.value}
+        />
+    )
+};
+
 export const NewTask = () => {
 
-  // const [ws, setWs] = React.useState<any>(null);
-
   const ws: any = React.useRef<any| null>(null);
-	const [completedCount, setCompletedCount] = React.useState<number>(0);
-  const [log, setLog] = React.useState<string | undefined>(undefined);
+  const [selectedAnimal, setSelectedAnimal] = React.useState<string>(selectAnimals[0])
+  const [selectedCatBreed, setSelectedCatBreed] = React.useState<string>(catBreeds[0])
+  const [selectedDogBreed, setSelectedDogBreed] = React.useState<string>(dogBreeds[0])
 
-  const [showModal, setShowModal] = React.useState<boolean>(false);
-	const [userCount, setUserCount] = React.useState<number>(0);
+  const dogNameRef = React.useRef('Pluto')
+  const catNameRef = React.useRef('Pubs')
 
-  // car selection
-  const carNames = ['Volvo', 'Saab', 'Mercedes', 'Audi']
-  const selectCar = carNames.map((name, key) => <option key={key} value={name}>{name}</option>)
-  const [selectedCar, setSelectedCar] = React.useState<string>(carNames[0])
+  const { running } = React.useContext<{ running: boolean; setRunning: React.Dispatch<React.SetStateAction<boolean>>; }>(StatusContext);
 
-  // color selection
-  const colorNames = ['blue', 'red', 'pink']
-  const selectColor = colorNames.map((name, key) => <option key={key} value={name}>{name}</option>)
-  const [selectedColor, setSelectedColor] = React.useState<string>(colorNames[0])
-
-  // model selection
-  const modelNames = ['compact', 'sedan', 'SUV']
-  const selectModel = modelNames.map((name, key) => <option key={key} value={name}>{name}</option>)
-  const [selectedModel, setSelectedModel] = React.useState<string>(modelNames[0])
-
-  const onSelectChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    console.log(event.target.value)
-    setSelectedCar(event.target.value as string)
+  const onSelectedAnimalChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+      setSelectedAnimal(event.target.value as string)
+      console.log("Selected:", event.target.value)
   }
 
-  const onSelectColorChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    // console.log(event.target.value)
-    setSelectedCar(event.target.value as string)
+  const onSelectedCatBreedChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setSelectedCatBreed(event.target.value as string)
+    console.log("Selected:", event.target.value)
   }
 
-  const onSelectModelChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-    // console.log(event.target.value)
-    setSelectedModel(event.target.value as string)
+  const onSelectedDogBreedChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setSelectedDogBreed(event.target.value as string)
+    console.log("Breed:", event.target.value)
   }
 
-  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    // console.log('Submitted: ' + selectedCar + ":" + selectedColor + ":" + selectedModel);
+  // const handleSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  //   // console.log('Submitted: ' + selectedCar + ":" + selectedColor + ":" + selectedModel);
 
-    setLog(undefined);
-    ws?.current.send(JSON.stringify({ action: "doTask", car: selectedCar, model: selectedModel, color: selectedColor }));
-  }
+  //   setLog(undefined);
+  //   ws?.current.send(JSON.stringify({ action: "doTask", car: selectedCar, model: selectedModel, color: selectedColor }));
+  // }
  
-  const handleLogClick = ( event: React.MouseEvent<HTMLButtonElement, MouseEvent> ) => {
-    // console.log("Showing log for: ", log)
-    setShowModal(true)
-  }
+  // const handleLogClick = ( event: React.MouseEvent<HTMLButtonElement, MouseEvent> ) => {
+  //   // console.log("Showing log for: ", log)
+  //   // setShowModal(true)
+  // }
 
  	const onReceiveMessage = ({ data }: { data: string; }) => {
 		const obj: IMessage | null = JSON.parse(data);
@@ -117,11 +118,11 @@ export const NewTask = () => {
 
 		switch (obj.type) {
       case "state":
-        setCompletedCount(obj?.completed);
-        setLog(obj?.log)
+        // setCompletedCount(obj?.completed);
+        // setLog(obj?.log)
         break;
       case "users":
-        setUserCount(obj?.count);
+        // setUserCount(obj?.count);
         break;
       default:
         console.error("unsupported event", data);
@@ -150,48 +151,51 @@ export const NewTask = () => {
 		}
 	}, [ws]);
 
+  const sumitTask = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+
+    console.log("Task....")
+  }
+
+  const classes = useStyles();
+
   return (
-    <div>
-      <h5 className="text-center">Input</h5>
-      <div className="input-group mb-3">
-        <label htmlFor="cars" className="input-group-text">Choose car:</label>
-        <select className="form-select" name="cars" id="cars" onChange={onSelectChange} >
-          {selectCar}
-        </select>
-        <label htmlFor="colors" className="input-group-text">Choose color:</label>
-        <select className="form-select" name="colors" id="colors" onChange={onSelectColorChange} >
-          {selectColor}
-        </select>
-      </div>
-      <div className="input-group mb-3">        
-        <label htmlFor="models" className="input-group-text">Choose model:</label>
-        <select className="form-select" name="models" id="colors" onChange={onSelectModelChange} >
-          {selectModel}
-        </select>        
-      </div>
-      <button className="btn btn-outline-primary" onClick={handleSubmit}>Submit</button>
-      <br/>
-      <br/>
-      <h5 className="text-center">Output</h5>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th scope="col">Users</th>
-            <th scope="col">Completed</th>
-            <th scope="col">Log</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{userCount}</td>
-            <td>{completedCount}</td>
-            <td>{ log &&
-              <button className="btn btn-outline-primary" onClick={handleLogClick}>Show Log</button> }
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      {showModal && <ScrollModal setShowModal={setShowModal} path={log}/> }
-    </div>
+    <Grid container>
+      <Grid item xs={3}>
+        <FormControl component="fieldset">
+          <FormLabel className={classes.labelRoot} component="legend">Animal</FormLabel>
+          <FormGroup>
+            <Select variant="outlined" value={selectedAnimal} onChange={onSelectedAnimalChange} >
+              {animalMenu}
+            </Select>
+            <br />
+            {running ?
+              <CircularProgress className={classes.progress} /> :
+              <Button className={classes.button} variant="contained" color="primary" onClick={sumitTask} endIcon={<Send />}>Run</Button>
+            }
+          </FormGroup>
+        </FormControl>
+      </Grid>
+      <Grid item xs={3}>
+        {selectedAnimal === selectAnimals[0] &&
+          <Grid container direction="column">
+            <CustomTextField label="Dog name" classes={classes} name={dogNameRef} />
+            <InputLabel id="dogBreedSelect">Dog Breed</InputLabel>
+            <Select labelId="dogBreedSelect" variant="outlined" value={selectedDogBreed} onChange={onSelectedDogBreedChange} >
+              {dogBreedMenu}
+            </Select>
+          </Grid>
+        }
+        {selectedAnimal === selectAnimals[1] &&
+          <Grid container direction="column">
+            <CustomTextField label="Cat name" classes={classes} name={catNameRef} />
+            <InputLabel id="breedSelect">Cat Breed</InputLabel>
+            <Select labelId="catBreedSelect" variant="outlined" value={selectedCatBreed} onChange={onSelectedCatBreedChange} >
+              {catBreedMenu}
+            </Select>
+          </Grid>
+        }
+      </Grid>
+    </Grid>    
   );
 }
