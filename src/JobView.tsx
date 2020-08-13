@@ -3,7 +3,6 @@ import { StatusContext, contextType } from './StatusContext';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { Button, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { Assignment } from '@material-ui/icons';
-// import { useCookies } from 'react-cookie';
 
 // Dialog related items
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
@@ -32,8 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-
-const ScrollDialog: React.FC<{ path: string }> = ({ path }) => {
+const ScrollDialog: React.FC<{ path: string, logContent: string|undefined }> = ({ path, logContent }) => {
 
     const [open, setOpen] = React.useState(false);
     const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
@@ -45,12 +43,6 @@ const ScrollDialog: React.FC<{ path: string }> = ({ path }) => {
             descriptionElement.focus();
         }
     }, [open]);
-
-    // const [cookies, ,] = useCookies(['token']);
-
-    // let authorization = 'Bearer '
-    // if (cookies && cookies.token)
-    //     authorization += cookies.token
 
     const handleClickOpen = (scrollType: DialogProps['scroll']) => () => {
         setOpen(true);
@@ -72,7 +64,7 @@ const ScrollDialog: React.FC<{ path: string }> = ({ path }) => {
                 aria-describedby="scroll-dialog-description"
                 maxWidth='lg'
             >
-                <DialogTitle id="scroll-dialog-title">Content from {path}</DialogTitle>
+                <DialogTitle id="scroll-dialog-title">Log for: {path}</DialogTitle>
                 <DialogContent dividers={scroll === 'paper'}>
                     <DialogContentText
                         id="scroll-dialog-description"
@@ -80,7 +72,7 @@ const ScrollDialog: React.FC<{ path: string }> = ({ path }) => {
                         tabIndex={-1}
                         style={{ whiteSpace: 'pre-line' }}
                     >
-                        {path}
+                        {logContent}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -93,7 +85,7 @@ const ScrollDialog: React.FC<{ path: string }> = ({ path }) => {
 
 const JobTableView = (): JSX.Element => {
 
-    const { userCount, completedCount, log } = React.useContext<contextType>(StatusContext);
+    const { userCount, completedCount, log, logContent } = React.useContext<contextType>(StatusContext);
 
     const classes = useStyles();
 
@@ -110,7 +102,7 @@ const JobTableView = (): JSX.Element => {
                 <TableRow >
                     <TableCell>{userCount}</TableCell>
                     <TableCell>{completedCount}</TableCell>
-                    <TableCell>{log && <ScrollDialog path={log} />}</TableCell>
+                    <TableCell>{log && <ScrollDialog path={log} logContent={logContent} />}</TableCell>
                 </TableRow>
             </TableBody>
         </Table>

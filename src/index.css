@@ -1,27 +1,21 @@
-
-/* BASIC */
-html {
-  background-color: #92badd;
-}
-
 body {
-font-family: "Poppins", sans-serif;
-height: 100vh;
+  font-family: "Poppins", sans-serif;
+  height: 100vh;
 }
 
 a {
-color: #92badd;
-display:inline-block;
-text-decoration: none;
-font-weight: 400;
+  color: #92badd;
+  display:inline-block;
+  text-decoration: none;
+  font-weight: 400;
 }
 
 h2 {
-text-align: center;
-font-size: 16px;
-font-weight: 600;
-text-transform: uppercase;
-display:inline-block;
-margin: 40px 8px 10px 8px; 
-color: #cccccc;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display:inline-block;
+  margin: 40px 8px 10px 8px; 
+  color: #cccccc;
 }

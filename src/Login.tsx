@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Avatar, Button, Container, Box, CssBaseline, TextField, Typography, Link } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
@@ -38,7 +39,7 @@ function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://www.google.com/">Google</Link>{' '}
+            <Link color="inherit" href="https://reactjs.org/">React</Link>{' '}
             {new Date().getFullYear()}
             {'.'}
         </Typography>
@@ -51,7 +52,7 @@ const Login = ({ setUser }: LoginProps ) => {
     const passRef = React.useRef<string>('');
     const classes = useStyles();
 
-    const { ws } = React.useContext<contextType>(StatusContext);
+    const { ws, loginError } = React.useContext<contextType>(StatusContext);
 
     const getUserWs = async () => {
 
@@ -98,8 +99,9 @@ const Login = ({ setUser }: LoginProps ) => {
                         label="User name" name="user" autoComplete="user" autoFocus onChange={e => userRef.current = e.target.value} />
                     <TextField id="passwordInput" variant="outlined" margin="normal" required fullWidth name="password"
                         label="Password" type="password" autoComplete="current-password" onChange={e => passRef.current = e.target.value} />
-                    <Button id="signButton" type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>Sign in</Button>
+                    <Button id="signButton" type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>Sign in</Button>                    
                 </form>
+                {loginError && <Alert severity="error">Login error: {loginError}</Alert>}
             </div>
             <Box mt={8}>
                 <Copyright />

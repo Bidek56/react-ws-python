@@ -1,18 +1,20 @@
 import React from 'react'
 import { CookiesProvider, useCookies } from "react-cookie";
 import { StatusContext } from './StatusContext';
-import { NewTask } from './NewTask'
+import NewTask from './NewTask'
 import NavBar from './NavBar'
 import Login from './Login'
 import JobTableView from './JobView'
 
 interface IMessage {
-  count: number;
-  log?: string;
-  completed: number;
-  type: string;
-  token: string;
-  user: string;
+    type: string;
+    count: number;
+    log?: string;
+    log_content?: string;
+    completed?: number;
+    token?: string;
+    user?: string;
+    message?: string;
 }
 
 const App = () => {
@@ -23,12 +25,14 @@ const App = () => {
     const [userCount, setUserCount] = React.useState<number>(0)
     const [completedCount, setCompletedCount] = React.useState<number>(0)
     const [log, setLog] = React.useState<string|undefined>()
+    const [logContent, setLogContent] = React.useState<string|undefined>()
+    const [loginError, setLoginError] = React.useState<string|undefined>()
 
     const statusValue = React.useMemo(() => ({ ws, running, setRunning, 
                                                userCount, setUserCount,
                                                completedCount, setCompletedCount,
-                                               log, setLog
-                                            }), [ws, running, setRunning, userCount, setUserCount, completedCount, setCompletedCount, log, setLog]);
+                                               log, setLog, logContent, loginError
+                                            }), [ws, running, setRunning, userCount, setUserCount, completedCount, setCompletedCount, log, setLog, logContent, loginError]);
     const [cookies, setCookie, removeCookie] = useCookies(['token']);
 
     const logout = () => {
@@ -49,10 +53,13 @@ const App = () => {
         if (!obj)
             return
 
+        // console.log("Msg rcvd:", obj)
+
         switch (obj.type) {
             case "state":
-                setCompletedCount(obj?.completed);
-                setLog(obj?.log)
+                if (obj?.completed) setCompletedCount(obj?.completed);
+                setLog(obj?.log);
+                setLogContent(obj?.log_content)
                 break;
             case "users":
                 setUserCount(obj?.count);
@@ -60,13 +67,24 @@ const App = () => {
             case "token":
                 if (obj?.token) {
                     setCookie("token", obj?.token, { maxAge: 3600, sameSite: 'strict'});
-                    setUser(obj?.user)
+                    if (obj?.user) setUser(obj?.user);
+                    setLoginError(undefined)
+                } else {
+                    setLoginError("Token not found");
                 }
+                break;
+            case "error":
+                setLoginError(obj?.message);
                 break;
             default:
                 console.error("unsupported event", data);
         }
     };
+
+    const onError = (data:any) => {
+        console.error("WS error")
+        setLoginError("Websocket error")
+    }
 
     React.useEffect(() => {
 
@@ -76,11 +94,12 @@ const App = () => {
 		try {
             if (!ws.current) {
 			    ws.current = new WebSocket(`ws://localhost:6789`);
-			    console.log("New WS:", ws.current)
+			    // console.log("New WS:", ws.current)
             }
 
 			if (ws.current) {
 				ws.current.addEventListener("message", onReceiveMessage);
+                ws.current.addEventListener("error", onError);
 			}
 
 			return () => {
@@ -88,25 +107,23 @@ const App = () => {
 			};
 		}
 		catch(err) {
-			console.error(err.message);
+			console.error("Error:", err.message);
 		}
 	});
 
     return (
         <CookiesProvider>
-            <React.Fragment>
-                <StatusContext.Provider value={statusValue}>
-                { user || (cookies && cookies.token) ?
+            <StatusContext.Provider value={statusValue}>
+                { user || cookies?.token ?
                     <div>                        
                         <NavBar logout={logout} />
                         <br/>
-                        <NewTask/> 
+                        <NewTask token={cookies?.token}/>
                         <br/>
                         <JobTableView/>                        
                     </div> : <Login setUser={setUser} />
                 }
-                </StatusContext.Provider>
-            </React.Fragment>
+            </StatusContext.Provider>
         </CookiesProvider>
     )
 }

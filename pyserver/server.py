@@ -15,7 +15,7 @@ authenticated_users = set()
 
 SECRET = "H3EgqdTJ1SqtOekMQXxwufbo2iPpu89O"
 
-hashed_pass = "$2b$12$/VWCBS3QHwrKcJNuKV3CL.dAhsJGDI5NDa3bcvRoDopJsLgAj1/6W"
+user_list = [{"user":"bidek56", "hashed_pass": "$2b$12$/VWCBS3QHwrKcJNuKV3CL.dAhsJGDI5NDa3bcvRoDopJsLgAj1/6W", "completed": 0}]
 
 def state_event():
     return json.dumps({"type": "state", **STATE})
@@ -56,9 +56,30 @@ async def counter(websocket, path):
             print(f"Msg {message}")
 
             if data["action"] == "doTask":
-                STATE["completed"] += 1    
-                STATE["log"] = r"c:\temp\pytest.ini"
-                await notify_state()
+                print(f"Data {data}")
+
+                if "token" in data:
+                    token = data['token']
+
+                    # decoded JWT token
+                    decoded = jwt.decode(token, SECRET, algorithms=['HS256'])                  
+                    if "user" in decoded:
+                        user = decoded['user']
+
+                        user_match = next((l for l in user_list if l['user'] == user), None)
+                        
+                        if user_match:
+                           user_match["completed"] += 1
+
+                        log_content = None
+                        log = r"c:\temp\pytest.ini"
+                        with open(log) as f:
+                            log_content = f.read()
+
+                        await asyncio.wait([websocket.send(json.dumps({"type":"state", "user":user, "log_content": log_content, "log": log, "completed": user_match["completed"] }))])
+                    else:
+                        logger.error("Token not decoded")
+
             elif data["action"] == "doLogin":
                 if 'login' in data:                    
                     login = data['login']
@@ -67,19 +88,30 @@ async def counter(websocket, path):
                     user = login["user"]
                     password = login["pass"]
 
-                    if bcrypt.checkpw(password.encode('utf8'), hashed_pass.encode('utf8')):
-                        print(f"Password for user: {user} matches!")
-                        encoded = jwt.encode({'user': user}, SECRET, algorithm='HS256')
-                        # print(f"Enc: {encoded}")
+                    user_match = next((l for l in user_list if l['user'] == user), None)
+                    
+                    if user_match:
+                        hashed_pass = user_match["hashed_pass"]
 
-                        authenticated_users.discard(user)  # removes x from set s if present
-                        authenticated_users.add(user)  # add new user
+                        if bcrypt.checkpw(password.encode('utf8'), hashed_pass.encode('utf8')):
+                            print(f"Password for user: {user} matches!")
+                            encoded = jwt.encode({'user': user}, SECRET, algorithm='HS256')
+                            # print(f"Enc: {encoded}")
 
-                        print(f"authenticated_users: {authenticated_users}")
+                            authenticated_users.discard(user)  # removes x from set s if present
+                            authenticated_users.add(user)  # add new user
 
-                        await asyncio.wait([websocket.send(json.dumps({ "type": "token", "user": user, "token": encoded.decode('utf8')}))])
+                            print(f"authenticated_users: {authenticated_users}")
+
+                            await asyncio.wait([websocket.send(json.dumps({"type":"token", "user":user, "token":encoded.decode('utf8')}))])
+                        else:
+                            message = f"Password for user: {user} does not Match :("
+                            logger.error(message)
+                            await asyncio.wait([websocket.send(json.dumps({"type": "error", "user": user, "message": message }))])
                     else:
-                        logger.error(f"Password for user: {user} does not Match :(")
+                        message = f"User {user} not found"
+                        logger.error(message)
+                        await asyncio.wait([websocket.send(json.dumps({"type": "error", "user": user, "message": message }))])
                 else:
                     logger.error("Login data missing from data: %s", data)
 

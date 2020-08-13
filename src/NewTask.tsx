@@ -1,6 +1,6 @@
 
 import React from 'react'
-
+import PropTypes from 'prop-types'
 import { StatusContext, contextType } from './StatusContext';
 import { InputLabel, FormControl, FormLabel, FormGroup, CircularProgress, TextField, Select, MenuItem, Grid, Button } from '@material-ui/core'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
@@ -64,7 +64,7 @@ const CustomTextField = (ref: React.PropsWithChildren<ICustomInput>): JSX.Elemen
     )
 };
 
-export const NewTask = () => {
+const NewTask = ({token}: {token: string|null}) => {
   
   const [selectedAnimal, setSelectedAnimal] = React.useState<string>(selectAnimals[0])
   const [selectedCatBreed, setSelectedCatBreed] = React.useState<string>(catBreeds[0])
@@ -93,15 +93,16 @@ export const NewTask = () => {
   const sumitTask = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
 
-    let data: any;
+    let breed: string | null = null;
+    const animal = selectedAnimal;
     if (selectedAnimal === selectAnimals[0]) {
-      data = { selectedAnimal: selectedCatBreed }
+      breed = selectedCatBreed;
     } else if (selectedAnimal === selectAnimals[1]) {
-      data = { selectedAnimal: selectedDogBreed }
+      breed = selectedDogBreed;
     }
 
     setLog(undefined);
-    ws?.current.send(JSON.stringify({ action: "doTask",  data }));
+    ws?.current.send(JSON.stringify({ action: "doTask", token, animal, breed }));
   }
 
   const classes = useStyles();
@@ -146,3 +147,9 @@ export const NewTask = () => {
     </Grid>    
   );
 }
+
+NewTask.propTypes = {
+  token: PropTypes.string
+}
+
+export default NewTask;
