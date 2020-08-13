@@ -27,22 +27,14 @@ In the project directory, you can run:
 
     See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `Front end server`
-
-The server behind the frontend is written in Deno and Oak.
-
-To run it:
-
-1. [Install Deno](https://deno.land/#installation)
-
-2. Use:
-    1. `deno run --allow-net --allow-write --allow-env server.ts`
-    
-    Or
-
-    2. use [denon](https://github.com/denosaurs/denon): `denon start`
-
 ### `Websocket server`
 The websocket server is written using Python 3.8
 
-Run it using: `python pyserver/server.py`
+To run it:
+
+1. `python pyserver/server.py`
+
+Or
+
+2. `npm i -g nodemon`
+3. `nodemon --exec python server.py`

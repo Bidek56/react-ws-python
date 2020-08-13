@@ -6,13 +6,6 @@ import { InputLabel, FormControl, FormLabel, FormGroup, CircularProgress, TextFi
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { Send } from '@material-ui/icons';
 
-interface IMessage {
-  count: number;
-  log?: string;
-  completed: number;
-  type: string;
-}
-
 const selectAnimals = ['Dog', 'Cat']
 const animalMenu = selectAnimals.map((name, key) => <MenuItem key={key} value={name}>{name}</MenuItem>)
 
@@ -58,7 +51,7 @@ interface ICustomInput {
 }
 
 // Custom text field
-const CustomTextField: React.FC<ICustomInput> = (ref: React.PropsWithChildren<ICustomInput>): JSX.Element => {
+const CustomTextField = (ref: React.PropsWithChildren<ICustomInput>): JSX.Element => {
     return (
         <TextField className={ref.classes.textField}
             InputLabelProps={{ classes: { root: ref.classes.labelRoot } }}
@@ -72,8 +65,7 @@ const CustomTextField: React.FC<ICustomInput> = (ref: React.PropsWithChildren<IC
 };
 
 export const NewTask = () => {
-
-  const ws: any = React.useRef<any| null>(null);
+  
   const [selectedAnimal, setSelectedAnimal] = React.useState<string>(selectAnimals[0])
   const [selectedCatBreed, setSelectedCatBreed] = React.useState<string>(catBreeds[0])
   const [selectedDogBreed, setSelectedDogBreed] = React.useState<string>(dogBreeds[0])
@@ -81,7 +73,7 @@ export const NewTask = () => {
   const dogNameRef = React.useRef('Pluto')
   const catNameRef = React.useRef('Pubs')
 
-  const { running, setUserCount, setCompletedCount, setLog } = React.useContext<contextType>(StatusContext);
+  const { ws, running, setLog } = React.useContext<contextType>(StatusContext);
 
   const onSelectedAnimalChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
       setSelectedAnimal(event.target.value as string)
@@ -111,48 +103,6 @@ export const NewTask = () => {
     setLog(undefined);
     ws?.current.send(JSON.stringify({ action: "doTask",  data }));
   }
-
-  React.useEffect(() => {
-
-    const onReceiveMessage = ({ data }: { data: string; }) => {
-      const obj: IMessage | null = JSON.parse(data);
-
-      if (!obj)
-        return
-
-      switch (obj.type) {
-        case "state":
-          setCompletedCount(obj?.completed);
-          setLog(obj?.log)
-          break;
-        case "users":
-          setUserCount(obj?.count);
-          break;
-        default:
-          console.error("unsupported event", data);
-      }
-    };
-
-		ws?.current?.close();
-
-		try {
-
-			ws.current = new WebSocket(`ws://localhost:6789`);
-
-			// console.log("WS:", ws.current)
-
-			if (ws.current) {
-				ws.current.addEventListener("message", onReceiveMessage);
-			}
-
-			return () => {
-				ws.current.removeEventListener("message", onReceiveMessage);
-			};
-		}
-		catch(err) {
-			console.error(err.message);
-		}
-	}, [ws, setUserCount, setCompletedCount, setLog]);
 
   const classes = useStyles();
 

@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import { Avatar, Button, Container, Box, CssBaseline, TextField, Typography, Link } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import { useCookies } from 'react-cookie';
 
-type  LoginProps = { setUser: (username: string | null) => void, }
+import { StatusContext, contextType } from './StatusContext';
+
+type LoginProps = { setUser: (username: string | null) => void, }
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -49,27 +50,19 @@ const Login = ({ setUser }: LoginProps ) => {
     const userRef = React.useRef<string>('');
     const passRef = React.useRef<string>('');
     const classes = useStyles();
-    const [, setCookie] = useCookies(['etl-token']);
 
-    const getUser = async () => {
-        const response = await fetch('http://localhost:8000/auth/login', {
-            method: 'POST',
-            headers: new Headers({'content-type': 'application/json'}),
-            body: JSON.stringify({ user: userRef?.current, pass: passRef?.current })
-        })
+    const { ws } = React.useContext<contextType>(StatusContext);
 
-        // console.log("Res OK:", response.ok)
+    const getUserWs = async () => {
 
-        if (response.ok) {
-            const body = await response.json()
-  
-            if (body?.data?.accessToken) {
-                setCookie("token", body?.data?.accessToken, { maxAge: 3600, sameSite: 'strict' });
-                setUser(userRef?.current)
-            } else {
-                alert('Error: token not returned')
-            }
-        }       
+        // console.log("Login WS:", ws.current)
+
+        try {
+            ws.current.send(JSON.stringify({ action: "doLogin", login: { user: userRef?.current, pass: passRef?.current }} ));
+        }
+		catch(err) {
+		    console.error(err.message);
+		}
     }
 
     const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,7 +82,7 @@ const Login = ({ setUser }: LoginProps ) => {
             return
         }
 
-        getUser()
+        getUserWs()
     }
 
     return (
