@@ -1,12 +1,15 @@
-The client of this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### The purpose of this project is to create a modern UI using React and Material-UI that connects to Python server using websocket in order to run long data tasks
 
-### Available Scripts
+
+The client of this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and it uses [Material-UI](https://material-ui.com/)
+
+### Available client scripts using npm
 
 In the project directory, you can run:
 
 1. #### `npm start`
 
-    Runs the app in the development mode.<br />
+    Runs the client app in the development mode.<br />
     Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
     The page will reload if you make edits.<br />
@@ -27,7 +30,7 @@ In the project directory, you can run:
 
     See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `Websocket server`
+### `Python Websocket server`
 The websocket server is written using Python 3.8
 
 To run it:
@@ -37,4 +40,4 @@ To run it:
 Or
 
 2. `npm i -g nodemon`
-3. `nodemon --exec python server.py`
+3. `nodemon --exec python pyserver/server.py`
