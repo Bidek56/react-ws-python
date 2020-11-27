@@ -31,11 +31,11 @@ In the project directory, you can run:
     See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### `Python Websocket server`
-The websocket server is written using Python 3.8
+The websocket server is written using Python 3.9
 
 To run it:
-
-1. `python pyserver/server.py`
+1. `pip install -r pyserver/requirements.txt`
+2. `python pyserver/server.py`
 
 Or
 

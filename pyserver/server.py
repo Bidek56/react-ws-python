@@ -3,7 +3,7 @@
 
 import asyncio
 import json, logging, websockets
-import jwt, bcrypt
+import bcrypt, jwt, tempfile, os
 
 logging.basicConfig()
 logger = logging.getLogger("server")
@@ -34,7 +34,8 @@ async def notify_state():
 async def notify_users():
     if USERS:  # asyncio.wait doesn't accept an empty list
         message = users_event()
-        await asyncio.wait([user.send(message) for user in USERS])
+        tasks = [asyncio.create_task(user.send(message)) for user in USERS]
+        await asyncio.wait(tasks)
 
 async def register(websocket):
     USERS.add(websocket)
@@ -72,11 +73,15 @@ async def counter(websocket, path):
                            user_match["completed"] += 1
 
                         log_content = None
-                        log = r"c:\temp\pytest.ini"
-                        with open(log) as f:
-                            log_content = f.read()
+                        log = os.path.join(tempfile.gettempdir(), "pytest.ini")
+                        if os.path.exists(log):
+                            with open(log) as f:
+                                log_content = f.read()
+                        else:
+                            log_content = "Log content"
 
-                        await asyncio.wait([websocket.send(json.dumps({"type":"state", "user":user, "log_content": log_content, "log": log, "completed": user_match["completed"] }))])
+                        task = asyncio.create_task(websocket.send(json.dumps({"type":"state", "user":user, "log_content": log_content, "log": log, "completed": user_match["completed"] })))
+                        await asyncio.wait([task])
                     else:
                         logger.error("Token not decoded")
 
@@ -103,7 +108,8 @@ async def counter(websocket, path):
 
                             print(f"authenticated_users: {authenticated_users}")
 
-                            await asyncio.wait([websocket.send(json.dumps({"type":"token", "user":user, "token":encoded.decode('utf8')}))])
+                            task = asyncio.create_task(websocket.send(json.dumps({"type":"token", "user":user, "token":encoded.decode('utf8')})))
+                            await asyncio.wait([task])
                         else:
                             message = f"Password for user: {user} does not Match :("
                             logger.error(message)
