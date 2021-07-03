@@ -108,7 +108,7 @@ async def counter(websocket, path):
 
                             print(f"authenticated_users: {authenticated_users}")
 
-                            task = asyncio.create_task(websocket.send(json.dumps({"type":"token", "user":user, "token":encoded.decode('utf8')})))
+                            task = asyncio.create_task(websocket.send(json.dumps({"type":"token", "user":user, "token":encoded.encode().decode('utf8')})))
                             await asyncio.wait([task])
                         else:
                             message = f"Password for user: {user} does not Match :("
