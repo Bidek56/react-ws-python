@@ -42,8 +42,9 @@ const App = () => {
         try {
             ws.current.send(JSON.stringify({ action: "doLogout", logout: { user: user }} ));
         }
-		catch(err) {
-		    console.error(err.message);
+		catch(err: unknown) {
+            if (err instanceof Error)
+		        console.error("WS error:", err.message);
 		}
     }
 
@@ -106,8 +107,9 @@ const App = () => {
 				ws.current.removeEventListener("message", onReceiveMessage);
 			};
 		}
-		catch(err) {
-			console.error("Error:", err.message);
+		catch(err: unknown) {
+            if (err instanceof Error)
+			    console.error("Error:", err.message);
 		}
 	});
 

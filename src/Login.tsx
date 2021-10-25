@@ -61,8 +61,9 @@ const Login = ({ setUser }: LoginProps ) => {
         try {
             ws.current.send(JSON.stringify({ action: "doLogin", login: { user: userRef?.current, pass: passRef?.current }} ));
         }
-		catch(err) {
-		    console.error(err.message);
+		catch(err: unknown) {
+            if (err instanceof Error)
+		        console.error(err.message);
 		}
     }
 
