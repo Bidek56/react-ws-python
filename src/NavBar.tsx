@@ -1,41 +1,19 @@
-import React from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import { Link } from '@material-ui/core';
-import { Home, ExitToApp } from '@material-ui/icons';
+import { Paper, Breadcrumbs, Link } from '@mui/material';
+import { Home, ExitToApp } from '@mui/icons-material';
 import PropTypes from 'prop-types'
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            padding: theme.spacing(1, 2),
-            backgroundColor: '#e3f2fd'
-        },
-        link: {
-            display: 'flex',
-        },
-        icon: {
-            marginRight: theme.spacing(0.5),
-            width: 20,
-            height: 20,
-        }
-    }),
-);
 
 const NavBar = ({ logout }: { logout: () => void }) => {
 
-    const classes = useStyles();
-
     return (
-        <Paper elevation={2} className={classes.root}>
+        <Paper elevation={2} sx={{ py: 1, px: 1.5, backgroundColor: '#e3f2fd' }}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link color="inherit" href="/" className={classes.link}>
-                    <Home className={classes.icon} />
+                <Link color="inherit" href="/" sx={{display: 'flex'}}>
+                    <Home sx={{py: 0.5, width: 20, height: 20 }} />
                 Menu
             </Link>
-                <Link color="inherit" href='/' className={classes.link} onClick={logout} >
-                    <ExitToApp className={classes.icon} />Logout
+                <Link color="inherit" href='/' sx={{display: 'flex'}} onClick={logout} >
+                    <ExitToApp sx={{py: 0.5, width: 20, height: 20 }} />Logout
             </Link>
             </Breadcrumbs>
         </Paper>

@@ -2,9 +2,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { StatusContext, contextType } from './StatusContext';
-import { InputLabel, FormControl, FormLabel, FormGroup, CircularProgress, TextField, Select, MenuItem, Grid, Button } from '@material-ui/core'
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import { Send } from '@material-ui/icons';
+import { InputLabel, FormControl, FormLabel, FormGroup, CircularProgress, TextField, Select, MenuItem, Grid, Button, SelectChangeEvent } from '@mui/material';
+import { Send } from '@mui/icons-material';
 
 const selectAnimals = ['Dog', 'Cat']
 const animalMenu = selectAnimals.map((name, key) => <MenuItem key={key} value={name}>{name}</MenuItem>)
@@ -15,37 +14,7 @@ const catBreedMenu = catBreeds.map((name, key) => <MenuItem key={key} value={nam
 const dogBreeds = ['Affenpinscher', 'Akbash', 'Akita Chow', 'Bassador']
 const dogBreedMenu = dogBreeds.map((name, key) => <MenuItem key={key} value={name}>{name}</MenuItem>)
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        button: {
-            margin: theme.spacing(1),
-        },
-        container: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        textField: {
-            margin: 8,
-            width: 500.
-        },
-        labelRoot: {
-            marginLeft: 0,
-            marginRight: 0,
-            fontSize: 18,
-
-        },
-        progress: {
-            margin: theme.spacing(2),
-        },
-        selectEmpty: {
-            marginTop: theme.spacing(1),
-            marginLeft: theme.spacing(1)
-        },
-    }),
-);
-
 interface ICustomInput {
-    classes: any
     label: string
     name: React.MutableRefObject<string>
 }
@@ -53,8 +22,7 @@ interface ICustomInput {
 // Custom text field
 const CustomTextField = (ref: React.PropsWithChildren<ICustomInput>): JSX.Element => {
     return (
-        <TextField className={ref.classes.textField}
-            InputLabelProps={{ classes: { root: ref.classes.labelRoot } }}
+        <TextField sx={{ margin: 8, width:500 }}
             variant="standard"
             type="string"
             label={ref.label}
@@ -75,17 +43,17 @@ const NewTask = ({token}: {token: string|null}) => {
 
   const { ws, running, setLog } = React.useContext<contextType>(StatusContext);
 
-  const onSelectedAnimalChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+  const onSelectedAnimalChange = (event: SelectChangeEvent<string>, child: React.ReactNode) => {
       setSelectedAnimal(event.target.value as string)
       console.log("Selected:", event.target.value)
   }
 
-  const onSelectedCatBreedChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+  const onSelectedCatBreedChange = (event: SelectChangeEvent<string>, child: React.ReactNode) => {
     setSelectedCatBreed(event.target.value as string)
     console.log("Selected:", event.target.value)
   }
 
-  const onSelectedDogBreedChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+  const onSelectedDogBreedChange = (event: SelectChangeEvent<string>, child: React.ReactNode) => {
     setSelectedDogBreed(event.target.value as string)
     console.log("Breed:", event.target.value)
   }
@@ -105,21 +73,19 @@ const NewTask = ({token}: {token: string|null}) => {
     ws?.current.send(JSON.stringify({ action: "doTask", token, animal, breed }));
   }
 
-  const classes = useStyles();
-
   return (
     <Grid container>
       <Grid item xs={3}>
         <FormControl component="fieldset">
-          <FormLabel className={classes.labelRoot} component="legend">Animal</FormLabel>
+          <FormLabel sx={{ marginLeft: 0, marginRight: 0, fontSize: 18,}} component="legend">Animal</FormLabel>
           <FormGroup>
             <Select variant="outlined" value={selectedAnimal} onChange={onSelectedAnimalChange} >
               {animalMenu}
             </Select>
             <br />
             {running ?
-              <CircularProgress className={classes.progress} /> :
-              <Button className={classes.button} variant="contained" color="primary" onClick={sumitTask} endIcon={<Send />}>Run</Button>
+              <CircularProgress sx={{py: 2 }}/> :
+              <Button sx={{py: 1 }} variant="contained" color="primary" onClick={sumitTask} endIcon={<Send />}>Run</Button>
             }
           </FormGroup>
         </FormControl>
@@ -127,7 +93,7 @@ const NewTask = ({token}: {token: string|null}) => {
       <Grid item xs={3}>
         {selectedAnimal === selectAnimals[0] &&
           <Grid container direction="column">
-            <CustomTextField label="Dog name" classes={classes} name={dogNameRef} />
+            <CustomTextField label="Dog name" name={dogNameRef} />
             <InputLabel id="dogBreedSelect">Dog Breed</InputLabel>
             <Select labelId="dogBreedSelect" variant="outlined" value={selectedDogBreed} onChange={onSelectedDogBreedChange} >
               {dogBreedMenu}
@@ -136,7 +102,7 @@ const NewTask = ({token}: {token: string|null}) => {
         }
         {selectedAnimal === selectAnimals[1] &&
           <Grid container direction="column">
-            <CustomTextField label="Cat name" classes={classes} name={catNameRef} />
+            <CustomTextField label="Cat name" name={catNameRef} />
             <InputLabel id="breedSelect">Cat Breed</InputLabel>
             <Select labelId="catBreedSelect" variant="outlined" value={selectedCatBreed} onChange={onSelectedCatBreedChange} >
               {catBreedMenu}

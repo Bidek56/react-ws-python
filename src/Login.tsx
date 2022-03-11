@@ -1,39 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Avatar, Button, Container, Box, CssBaseline, TextField, Typography, Link } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { Alert, Avatar, Button, Container, Box, CssBaseline, TextField, Typography, Link } from '@mui/material';
+
+import { LockOutlined } from '@mui/icons-material';
 
 import { StatusContext, contextType } from './StatusContext';
 
 type LoginProps = { setUser: (username: string | null) => void, }
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        '@global': {
-            body: {
-                backgroundColor: theme.palette.common.white,
-            },
-        },
-        paper: {
-            marginTop: theme.spacing(8),
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        },
-        avatar: {
-            margin: theme.spacing(1),
-            backgroundColor: theme.palette.secondary.main,
-        },
-        form: {
-            width: '100%', // Fix IE 11 issue.
-            marginTop: theme.spacing(1),
-        },
-        submit: {
-            margin: theme.spacing(3, 0, 2),
-        },
-    }));
 
 function Copyright() {
     return (
@@ -50,7 +23,6 @@ const Login = ({ setUser }: LoginProps ) => {
 
     const userRef = React.useRef<string>('');
     const passRef = React.useRef<string>('');
-    const classes = useStyles();
 
     const { ws, loginError } = React.useContext<contextType>(StatusContext);
 
@@ -90,17 +62,17 @@ const Login = ({ setUser }: LoginProps ) => {
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
-            <div className={classes.paper}>
-                <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Avatar>
+                    <LockOutlined />
                 </Avatar>
                 <Typography component="h1" variant="h5">Sign in</Typography>
-                <form id="loginForm" className={classes.form} noValidate onSubmit={handleSignIn}>
+                <form id="loginForm" noValidate onSubmit={handleSignIn}>
                     <TextField id="userInput" variant="outlined" margin="normal" required fullWidth
                         label="User name" name="user" autoComplete="user" autoFocus onChange={e => userRef.current = e.target.value} />
                     <TextField id="passwordInput" variant="outlined" margin="normal" required fullWidth name="password"
                         label="Password" type="password" autoComplete="current-password" onChange={e => passRef.current = e.target.value} />
-                    <Button id="signButton" type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>Sign in</Button>                    
+                    <Button id="signButton" type="submit" fullWidth variant="contained" color="primary">Sign in</Button>                    
                 </form>
                 {loginError && <Alert severity="error">Login error: {loginError}</Alert>}
             </div>

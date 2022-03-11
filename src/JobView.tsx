@@ -1,35 +1,11 @@
 import React from 'react'
 import { StatusContext, contextType } from './StatusContext';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import { Button, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { Assignment } from '@material-ui/icons';
+import { Button, Table, TableBody, TableCell, TableHead, TableRow, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Assignment } from '@mui/icons-material';
 
 // Dialog related items
-import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { DialogProps } from '@mui/material/Dialog';
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            width: '100%',
-            marginTop: theme.spacing(3),
-            overflowX: 'auto',
-        },
-        table: {
-            minWidth: 650,
-        },
-        head: {
-            backgroundColor: '#e3f2fd',
-            color: theme.palette.common.white,
-        },
-        dialog: {
-            whiteSpace: 'pre-line'
-        }
-    }),
-);
 
 const ScrollDialog: React.FC<{ path: string, logContent: string|undefined }> = ({ path, logContent }) => {
 
@@ -87,11 +63,9 @@ const JobTableView = (): JSX.Element => {
 
     const { userCount, completedCount, log, logContent } = React.useContext<contextType>(StatusContext);
 
-    const classes = useStyles();
-
     return (
-        <Table className={classes.table}>
-            <TableHead className={classes.head}>
+        <Table sx={{minWidth: 650}}>
+            <TableHead sx={{backgroundColor: '#e3f2fd'}}>
                 <TableRow>
                     <TableCell>Users</TableCell>
                     <TableCell>Completed</TableCell>
