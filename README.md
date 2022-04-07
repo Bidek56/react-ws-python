@@ -1,7 +1,7 @@
-### The purpose of this project is to create a modern UI using React and Material-UI that connects to Python server using websocket in order to run long data tasks
+### The purpose of this project is to create a modern UI using React which connects to Python server using websocket in order to run long data tasks  
+  
 
-
-The client of this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and it uses [Material-UI](https://material-ui.com/)
+The client of this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and it uses [MUI](https://mui.com/)
 
 ### Available client scripts using npm
 
@@ -39,5 +39,5 @@ To run it:
 
 Or
 
-2. `npm i -g nodemon`
-3. `nodemon --exec python pyserver/server.py`
+1. `npm i -g nodemon`
+2. `nodemon --exec python pyserver/server.py`
