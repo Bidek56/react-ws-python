@@ -3,6 +3,8 @@
 
 The client of this project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and it uses [MUI](https://mui.com/)
 
+To install MUI with React 18, please `npm i --legacy-peer-deps` until MUI fixes it's support for React 18
+
 ### Available client scripts using npm
 
 In the project directory, you can run:
