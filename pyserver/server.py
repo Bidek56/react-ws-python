@@ -5,6 +5,10 @@ import asyncio
 import json, logging, websockets
 import bcrypt, jwt, tempfile, os
 
+from websockets.server import serve, WebSocketServerProtocol
+from websockets.exceptions import ConnectionClosed
+import json
+
 logging.basicConfig()
 logger = logging.getLogger("server")
 
@@ -46,7 +50,7 @@ async def unregister(websocket):
     await notify_users()
 
 
-async def counter(websocket, path):
+async def counter(websocket: WebSocketServerProtocol, path):
     # register(websocket) sends user_event() to websocket
     await register(websocket)
     try:
@@ -135,7 +139,12 @@ async def counter(websocket, path):
         await unregister(websocket)
 
 
-start_server = websockets.serve(counter, "localhost", 6789)
+async def main():
+    async with serve(counter, "localhost", 6789):
+        await asyncio.Future()  # run forever
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
