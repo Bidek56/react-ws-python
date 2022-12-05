@@ -58,10 +58,10 @@ async def counter(websocket: WebSocketServerProtocol, path):
         async for message in websocket:
             data = json.loads(message)
 
-            print(f"Msg {message}")
+            # print(f"Msg {message}")
 
             if data["action"] == "doTask":
-                print(f"Data {data}")
+                # print(f"Data {data}")
 
                 if "token" in data:
                     token = data['token']
@@ -92,7 +92,7 @@ async def counter(websocket: WebSocketServerProtocol, path):
             elif data["action"] == "doLogin":
                 if 'login' in data:                    
                     login = data['login']
-                    print(f"Login: {login}")
+                    # print(f"Login: {login}")
 
                     user = login["user"]
                     password = login["pass"]
@@ -103,14 +103,14 @@ async def counter(websocket: WebSocketServerProtocol, path):
                         hashed_pass = user_match["hashed_pass"]
 
                         if bcrypt.checkpw(password.encode('utf8'), hashed_pass.encode('utf8')):
-                            print(f"Password for user: {user} matches!")
+                            # print(f"Password for user: {user} matches!")
                             encoded = jwt.encode({'user': user}, SECRET, algorithm='HS256')
                             # print(f"Enc: {encoded}")
 
                             authenticated_users.discard(user)  # removes x from set s if present
                             authenticated_users.add(user)  # add new user
 
-                            print(f"authenticated_users: {authenticated_users}")
+                            # print(f"authenticated_users: {authenticated_users}")
 
                             task = asyncio.create_task(websocket.send(json.dumps({"type":"token", "user":user, "token":encoded.encode().decode('utf8')})))
                             await asyncio.wait([task])
@@ -121,7 +121,8 @@ async def counter(websocket: WebSocketServerProtocol, path):
                     else:
                         message = f"User {user} not found"
                         logger.error(message)
-                        await asyncio.wait([websocket.send(json.dumps({"type": "error", "user": user, "message": message }))])
+                        task = asyncio.create_task(websocket.send(json.dumps({"type": "error", "user": user, "message": message })))
+                        await asyncio.wait([task])
                 else:
                     logger.error("Login data missing from data: %s", data)
 
@@ -131,7 +132,7 @@ async def counter(websocket: WebSocketServerProtocol, path):
                     user = logout["user"]
                     authenticated_users.discard(user)  # removes x from set s if present
 
-                    print(f"authenticated_users: {authenticated_users}")
+                    # print(f"authenticated_users: {authenticated_users}")
                 # await notify_state()
             else:
                 logger.error("unsupported action: %s", data)
