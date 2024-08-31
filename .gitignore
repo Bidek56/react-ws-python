@@ -25,4 +25,4 @@ package-lock.json
 pyserver/hash_it.py
 .eslintcache
 .vscode/settings.json
-venv
+.venv
