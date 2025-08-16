@@ -75,7 +75,7 @@ const NewTask = ({token}: {token: string|null}) => {
 
   return (
     <Grid container>
-      <Grid item xs={3}>
+      <Grid size={3}>
         <FormControl component="fieldset">
           <FormLabel sx={{ marginLeft: 0, marginRight: 0, fontSize: 18,}} component="legend">Animal</FormLabel>
           <FormGroup>
@@ -90,7 +90,7 @@ const NewTask = ({token}: {token: string|null}) => {
           </FormGroup>
         </FormControl>
       </Grid>
-      <Grid item xs={3}>
+      <Grid size={3}>
         {selectedAnimal === selectAnimals[0] &&
           <Grid container direction="column">
             <CustomTextField label="Dog name" name={dogNameRef} />

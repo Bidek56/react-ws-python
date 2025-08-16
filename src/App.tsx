@@ -1,5 +1,5 @@
 import React from 'react'
-import { CookiesProvider, useCookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 import { StatusContext } from './StatusContext';
 import NewTask from './NewTask'
 import NavBar from './NavBar'
@@ -114,7 +114,6 @@ const App = () => {
 	});
 
     return (
-        <CookiesProvider>
             <StatusContext.Provider value={statusValue}>
                 { user || cookies?.token ?
                     <div>                        
@@ -126,7 +125,6 @@ const App = () => {
                     </div> : <Login setUser={setUser} />
                 }
             </StatusContext.Provider>
-        </CookiesProvider>
     )
 }
 

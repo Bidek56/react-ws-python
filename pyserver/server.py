@@ -2,12 +2,9 @@
 # https://websockets.readthedocs.io/en/stable/api.html
 
 import asyncio
-import json, logging, websockets
-import bcrypt, jwt, tempfile, os
+import json, logging, os
 
-from websockets.server import serve, WebSocketServerProtocol
-from websockets.exceptions import ConnectionClosed
-import json
+from websockets.asyncio.server import serve, ServerConnection
 
 logging.basicConfig()
 logger = logging.getLogger("server")
@@ -50,7 +47,7 @@ async def unregister(websocket):
     await notify_users()
 
 
-async def counter(websocket: WebSocketServerProtocol, path):
+async def counter(websocket: ServerConnection):
     # register(websocket) sends user_event() to websocket
     await register(websocket)
     try:
